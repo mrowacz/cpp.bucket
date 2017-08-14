@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -g -std=c++17
+CXXFLAGS := -g -std=c++11
 
 SRCS=$(wildcard *.cpp)
 PRGS := $(patsubst %.cpp,%,$(SRCS))
