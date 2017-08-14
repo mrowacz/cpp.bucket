@@ -1,5 +1,6 @@
- #include <vector>
+#include <vector>
 #include <string>
+#include <memory>
 #include <iostream>
 #include <initializer_list>
 
@@ -48,15 +49,40 @@ class cat {
 		}
 };
 
-class dog {
+class Dog {
 	int age;
+	string name;
 public:
-	dog(int age):  age(age) {}
-	dog() = default;
+	Dog(int age):  age(age) {}
+	Dog(string name) : name(name) { cout << "Dog ctor() " << name << endl; }
+	Dog() {  }
+	~Dog() { cout << "Dog dtor() " << name << endl; }
 	virtual void voice() {
-		cout << "Hau hau!" << endl;
+		cout << name << ": Hau hau!" << endl;
 	}
 };
+
+void shared_ptr_example()
+{
+	{
+		cout << "+++++++++++++++++++++++++" << endl;
+		shared_ptr<Dog> p(new Dog("Burek"));
+		{
+			shared_ptr<Dog> p2 = p;
+			p2->voice();
+			cout << p.use_count() << endl;
+		}
+		p->voice();
+	}
+	{
+		Dog *d = new Dog("Tank");
+		shared_ptr(Dog) p = make_shared<Dog>("Tank");   //safest and faster
+	}
+	{
+		Dog *p1 = make_shared<Dog>("Gunner");
+		Dog *p2 = make_shared<Dog>("Tank");
+	}
+}
 
 constexpr long double operator"" _cm(long double x) { return x * 10; }
 constexpr long double operator"" _m(long double x) { return x * 1000; }
@@ -90,7 +116,7 @@ int main()
 	cout << "avg a() " << a.getAvg() << endl;
 	
 	// default test
-	dog d1;
+	Dog d1;
 	
 	// constexpr
 	cout << cube(3*3*3) << endl;
@@ -99,5 +125,8 @@ int main()
 	long double height = 3.4_cm;
 	cout << height << endl;
 	cout << (height + 13.0_m) << endl; 
+	
+	shared_ptr_example();
+	cout << "+++++++++++++++++++++++++" << endl;
     return 0;
 }
