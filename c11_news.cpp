@@ -76,11 +76,11 @@ void shared_ptr_example()
 	}
 	{
 		Dog *d = new Dog("Tank");
-		shared_ptr(Dog) p = make_shared<Dog>("Tank");   //safest and faster
+		shared_ptr<Dog> p = make_shared<Dog>("Tank");   //safest and faster
 	}
 	{
-		Dog *p1 = make_shared<Dog>("Gunner");
-		Dog *p2 = make_shared<Dog>("Tank");
+		auto p1 = make_shared<Dog>("Gunner");
+		auto p2 = make_shared<Dog>("Tank");
 	}
 }
 
