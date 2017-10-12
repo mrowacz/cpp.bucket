@@ -1,13 +1,15 @@
 #include <array>
 #include <memory>
+#include <utility>
 #include <iostream>
 #include <initializer_list>
 
 using namespace std;
 
+template <typename T>
 struct ListEntry {
 	ListEntry() = delete;
-	ListEntry(int v) {
+	ListEntry(T v) {
 		std::cout << "ctor() "  << v << std::endl;
 		value = v;
 	}
@@ -15,40 +17,52 @@ struct ListEntry {
 		std::cout << "dtor() " << value << std::endl;
 	}
 
-	int value;
-	std::shared_ptr<ListEntry> next;
+	T value;
+	std::shared_ptr<ListEntry<T>> next;
 };
 
+template <typename T>
 struct List {
 
-	static int counter;
-
-	List& insert()
+	List& insert(T value)
 	{
 		if (head == nullptr) {
 			std::cout << "Creating head!" << std::endl;
-			head = std::make_shared<ListEntry>(counter++);
+			head = std::make_shared<ListEntry<T>>(value);
 			tail = head;
 		} else {
 			auto s_ptr = tail.lock();
-			s_ptr->next = std::make_shared<ListEntry>(counter++);
+			s_ptr->next = std::make_shared<ListEntry<T>>(value);
 			tail = s_ptr->next;
 		}
 		return *this;
 	}
 
-	std::shared_ptr<ListEntry> head;
-	std::weak_ptr<ListEntry> tail;
+	ListEntry<T>&& find(T value)
+	{
+		auto ptr = head;
+		while(ptr->value != value && ptr->next != nullptr) {
+			ptr = ptr->next;
+		}
+
+		if (ptr->value == value)
+			return std::forward<ListEntry<T>>(*ptr);
+	}
+
+	std::shared_ptr<ListEntry<T>> head;
+	std::weak_ptr<ListEntry<T>> tail;
 };
-int List::counter = 0;
 
 int main()
 {
-	List list;
+	List<int> list;
 	list
-		.insert()
-		.insert()
-		.insert();
+		.insert(1)
+		.insert(2)
+		.insert(3);
+
+	auto&& entry = list.find(2);
+	std::cout << "entry val " << entry.value << std::endl;
 
 	return EXIT_SUCCESS;
 }
